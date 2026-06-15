@@ -83,6 +83,7 @@ class HyperparameterOptimizationFacade(AbstractFacade):
         scenario: Scenario,
         *,
         challengers: int = 10000,
+        n_random_samples: int = 1000,
         local_search_iterations: int = 10,
     ) -> LocalAndSortedRandomSearch:
         """Returns local and sorted random search as acquisition maximizer.
@@ -94,13 +95,20 @@ class HyperparameterOptimizationFacade(AbstractFacade):
         Parameters
         ----------
         challengers : int, defaults to 10000
-            Number of challengers.
+            Total acquisition-function evaluation budget per BO iteration. Split between
+            ``n_random_samples`` random configurations scored through the acquisition function
+            and ``challengers - n_random_samples`` steps reserved for local search.
+        n_random_samples : int, defaults to 1000
+            Number of random configurations sampled from the config space and scored through
+            the acquisition function. The top ``local_search_iterations`` of these are used
+            as starting points for local search.
         local_search_iterations: int, defaults to 10
-            Number of local search iterations.
+            Number of local search starting points (and parallel local searches).
         """
         optimizer = LocalAndSortedRandomSearch(
             scenario.configspace,
-            challengers=challengers,
+            challengers=n_random_samples,
+            max_steps=challengers - n_random_samples,
             local_search_iterations=local_search_iterations,
             seed=scenario.seed,
         )
