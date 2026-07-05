@@ -20,7 +20,7 @@ class RandomSearch(AbstractAcquisitionMaximizer):
         self,
         previous_configs: list[Configuration],
         n_points: int,
-        _sorted: bool = False,
+        _sorted: bool = True,
     ) -> list[tuple[float, Configuration]]:
         """Maximize acquisition function with random search
 
